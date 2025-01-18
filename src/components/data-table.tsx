@@ -38,7 +38,7 @@ import {
 import { useEffect } from "react";
 
 const fetchDirectories = async (): Promise<Directory[]> => {
-    const response = await fetch("http://localhost:3001/directories");
+    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/directories");
     const data: Directory[] = await response.json();
     console.log(data);
     return data;

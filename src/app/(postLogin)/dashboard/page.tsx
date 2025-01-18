@@ -36,7 +36,7 @@ export default function DashboardPage() {
 
 const createDirectory = async () => {
   try {
-    const response = await fetch("http://localhost:8086/api/directories/", {
+    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/api/directories/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

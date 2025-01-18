@@ -48,7 +48,7 @@ export default function Page({ llm, collection_name }: ChatParams) {
   const [collectionName, setCollectionName] = React.useState(collection_name);
 
   const fetchDirectories = async (): Promise<Directory[]> => {
-    const response = await fetch("http://localhost:8086/api/directories/all", {
+    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/api/directories/all", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -68,7 +68,7 @@ export default function Page({ llm, collection_name }: ChatParams) {
     if (!selected_directory) {
       return [];
     }
-    const response = await fetch("http://localhost:8086/api/file/all/files", {
+    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/api/file/all/files", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -23,7 +23,7 @@ export function DirectoryTable() {
   const auth = useContext(authContext);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchDirectories = async (): Promise<Directory[]> => {
-    const response = await fetch("http://localhost:8086/api/directories/all", {
+    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/api/directories/all", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

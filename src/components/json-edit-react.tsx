@@ -43,7 +43,7 @@ export default function JsonEditReact({ model, directory_id }: { model: string, 
         ]
     });
     const fetchJsonData = async () => {
-        const response = await fetch("http://localhost:8086/api/llm/fetch/json", {
+        const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/api/llm/fetch/json", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

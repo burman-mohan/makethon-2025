@@ -48,7 +48,7 @@ export default function FileUpload({
     });
     formData.append("directoryId", directoryId);
     formData.append("directoryName", directoryName);
-    const response = await fetch("http://localhost:8086/api/file/files", {
+    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/api/file/files", {
       method: "POST",
       body: formData,
     });

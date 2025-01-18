@@ -104,7 +104,7 @@ export const columns: ColumnDef<File>[] = [
       const file = row.original;
 
       async function deleteFile(id: number, directory_id: number, file_path: string) {
-        const response = await fetch("http://localhost:8086/api/file/delete/file", {
+        const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/api/file/delete/file", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -155,7 +155,7 @@ export function FileTable({ directory_id }: { directory_id: string }) {
   const [data, setFiles] = React.useState<File[]>([]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchFiles = async (): Promise<File[]> => {
-    const response = await fetch("http://localhost:8086/api/file/all/files", {
+    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/api/file/all/files", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -170,7 +170,7 @@ export function FileTable({ directory_id }: { directory_id: string }) {
   };
 
   // const deleteFile = async (file_name: string) => {
-  //   const response = await fetch("http://localhost:8086/api/db/file/delete", {
+  //   const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/api/db/file/delete", {
   //     method: "POST",
   //     headers: {
   //       "Content-Type": "application/json",

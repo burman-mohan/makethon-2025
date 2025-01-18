@@ -28,11 +28,12 @@ export function LoginForm({
     password: ""
   })
 
+  
   const [loading, setLoading] = React.useState(false)
   const handleLogin = async() => {
     try {
       setLoading(true)
-      const response = await fetch("http://localhost:8086/api/users/login", {
+      const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/api/users/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
