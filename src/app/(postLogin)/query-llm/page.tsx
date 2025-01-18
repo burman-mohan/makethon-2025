@@ -34,7 +34,12 @@ type ComboBoxItem = {
   label: string;
 };
 
-export default function Page({ llm, collection_name }: ChatParams) {
+type PageProps = {
+  params: ChatParams;
+};
+
+export default function Page({ params }: PageProps) {
+  const { llm, collection_name } = params;
   const llm_selected: string = llm ?? "llama-3.3-70b-versatile";
   const auth = useContext(authContext);
   const [directories, setDirectories] = React.useState<Directory[]>([]);

@@ -26,10 +26,12 @@ const data = {
         {
           title: "Dashboard",
           url: "/dashboard",
+          isActive: false,
         },
         {
           title: "Chat LLM",
           url: "/query-llm",
+          isActive: false,
         },
       ],
     },
@@ -148,6 +150,7 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  
   return (
     <Sidebar {...props}>
       <SidebarHeader>

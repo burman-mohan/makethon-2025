@@ -9,7 +9,7 @@ export default function Home() {
 
   return (
     <>
-    {auth.auth ? <DashboardPage /> : <LoginPage /> }
+    {auth.email ? <DashboardPage /> : <LoginPage /> }
     </>
   );
 }

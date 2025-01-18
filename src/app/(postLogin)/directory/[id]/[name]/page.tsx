@@ -23,7 +23,6 @@ export default function Page({
           </div>
           <div className="aspect-video rounded-xl bg-muted/50">
           <FileTable directory_id={params.id}></FileTable>
-          {/* <DataTableDemo directory_id={params.id}></DataTableDemo> */}
           </div>
         </div>
       </div>
