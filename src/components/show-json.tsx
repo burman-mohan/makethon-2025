@@ -33,7 +33,12 @@ const models = [
   },
 ];
 
-export function ShowJson({directory_id}: {directory_id: string}) {
+type ShowJsonParams = {
+  directory_id: string;
+  file_id: string;
+};
+
+export function ShowJson({directory_id, file_id}: ShowJsonParams) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
 
@@ -87,7 +92,7 @@ export function ShowJson({directory_id}: {directory_id: string}) {
           </Command>
         </PopoverContent>
       </Popover>
-      <JsonEditReact model={value} directory_id={directory_id}></JsonEditReact>
+      <JsonEditReact model={value} directory_id={directory_id} file_id={file_id}></JsonEditReact>
     </div>
   );
 }

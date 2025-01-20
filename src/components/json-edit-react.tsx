@@ -2,7 +2,13 @@
 import { JsonEditor } from "json-edit-react";
 import React, { useEffect } from "react";
 
-export default function JsonEditReact({ model, directory_id }: { model: string, directory_id: string }) {
+type JsonParams = {
+  directory_id: string;
+  file_id: string;
+  model: string
+};
+
+export default function JsonEditReact({ model, directory_id, file_id }: JsonParams) {
 
     const [jsonData, setJsonData] = React.useState({
         name: "John Doe",
@@ -42,30 +48,33 @@ export default function JsonEditReact({ model, directory_id }: { model: string, 
             }
         ]
     });
-    const fetchJsonData = async () => {
-        const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/api/llm/fetch/json", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ 
-              model: model,
-              directory_id: directory_id,
-            }),
-          });
-
-        const data = await response.json();
-        return data;
-    };
     useEffect(() => {
+        const fetchJsonData = async () => {
+            const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/api/llm/file/json", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ 
+                  model: model,
+                  directory_id: directory_id,
+                  file_id: file_id
+                }),
+              });
+    
+            const data = await response.json();
+            return data;
+        };  
+
         console.log("model", model);
         console.log("directory_id", directory_id);
+        console.log("file_id", file_id);
 
-        if(model && directory_id){
+        if(directory_id && file_id){
             fetchJsonData().then(data => setJsonData(data));
         }
 
-    }, [model]);
+    }, [model, file_id, directory_id]);
   return (
     <>
       <JsonEditor

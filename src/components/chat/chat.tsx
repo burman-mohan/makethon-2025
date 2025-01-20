@@ -12,6 +12,7 @@ import { useEffect } from "react";
 type ChatParams = {
   llm: string;
   collection_name: string;
+  server_ip: string
 };
 
 export function Chat({llm, collection_name}: ChatParams) {
@@ -19,7 +20,8 @@ export function Chat({llm, collection_name}: ChatParams) {
   
   const chat_body: ChatParams = {
     llm: llm,
-    collection_name: collection_name
+    collection_name: collection_name,
+    server_ip: process.env.NEXT_PUBLIC_API_URL || ""
   };
 
   const {
@@ -33,7 +35,7 @@ export function Chat({llm, collection_name}: ChatParams) {
     stop,
     data
   } = useChat({
-    api: "http://127.0.0.1:8086/api/llm/stream/chat",
+    api: process.env.NEXT_PUBLIC_API_URL + "/api/llm/stream/chat",
     body: chat_body,
     streamProtocol: 'text',
     onResponse(response) {
@@ -55,38 +57,6 @@ export function Chat({llm, collection_name}: ChatParams) {
   useEffect(() => {
     console.log("data: " + data);
   }, [data]);
-
-  // const {
-  //   messages,
-  //   setMessages,
-  //   handleSubmit,
-  //   input,
-  //   setInput,
-  //   append,
-  //   isLoading,
-  //   stop,
-  // } = useChat({
-  //   experimental_prepareRequestBody: ({ messages }) => {
-  //     // e.g. only the text of the last message:
-  //     return {
-  //       user_query: messages[messages.length - 1].content,
-  //       chat_history: []
-  //     };
-  //   },
-  //   api: 'http://127.0.0.1:8086/api/llm/stream/chat',
-  //   maxSteps: 4,
-  //   onError: (error) => {
-  //     if (error.message.includes("Too many requests")) {
-
-  //       toast({
-  //         variant: "destructive",
-  //         title: "You are sending too many messages. Please try again later.",
-  //         description: "There was a problem with your request.",
-  //         action: <ToastAction altText="Try again">Try again</ToastAction>,
-  //       })
-  //     }
-  //   },
-  // });
 
   const [messagesContainerRef, messagesEndRef] = useScrollToBottom<HTMLDivElement>();
 

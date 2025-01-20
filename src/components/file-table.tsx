@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ChevronDown, MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -23,10 +23,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
+
 import {
   Table,
   TableBody,
@@ -35,7 +34,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { set } from "date-fns";
 
 type File = {
   // file_name: string;
@@ -43,17 +41,27 @@ type File = {
   // doc_type: string;
   // directory_id: string;
   // created_date: string;
-  id: number,
-  name: string,
-  doc_type: string,
-  collection_name: string,
-  directory_id: number,
-  file_path: string,
-  embedding_status:boolean,
-  created_at: Date,
-  updated_at: Date
+  id: number;
+  name: string;
+  doc_type: string;
+  collection_name: string;
+  directory_id: number;
+  file_path: string;
+  embedding_status: boolean;
+  created_at: Date;
+  updated_at: Date;
 };
-export const columns: ColumnDef<File>[] = [
+
+type DropDownMenuAction = {
+  id: number;
+  directory_id: number;
+  file_path: string;
+  action: string;
+};
+
+export const columns = (
+  onDropdownSelect: (selectedRow: DropDownMenuAction) => void
+): ColumnDef<File>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -79,9 +87,7 @@ export const columns: ColumnDef<File>[] = [
   {
     accessorKey: "name",
     header: "File Name",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("name")}</div>
-    ),
+    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
   },
   {
     accessorKey: "doc_type",
@@ -103,20 +109,6 @@ export const columns: ColumnDef<File>[] = [
     cell: ({ row }) => {
       const file = row.original;
 
-      async function deleteFile(id: number, directory_id: number, file_path: string) {
-        const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/api/file/delete/file", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            id: id,
-            directory_id: directory_id,
-            file_path: file_path
-          }),
-        });
-      }
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -128,8 +120,29 @@ export const columns: ColumnDef<File>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
+              onClick={() => {
+                const selectedRow: DropDownMenuAction = {
+                  id: file.id,
+                  directory_id: file.directory_id,
+                  file_path: file.file_path,
+                  action: "show_json",
+                };
+                onDropdownSelect(selectedRow);
+              }}
+            >
+              Show Json
+            </DropdownMenuItem>
+            <DropdownMenuItem
               // onClick={() => navigator.clipboard.writeText(file.file_name)}
-              onClick={() => deleteFile(file.id, file.directory_id, file.file_path)}
+              onClick={() => {
+                const selectedRow: DropDownMenuAction = {
+                  id: file.id,
+                  directory_id: file.directory_id,
+                  file_path: file.file_path,
+                  action: "delete",
+                };
+                onDropdownSelect(selectedRow);
+              }}
             >
               Delete
             </DropdownMenuItem>
@@ -143,7 +156,12 @@ export const columns: ColumnDef<File>[] = [
   },
 ];
 
-export function FileTable({ directory_id }: { directory_id: string }) {
+interface FileTableProps {
+  directory_id: string;
+  setFileId: (data: string) => void; // Callback function type
+}
+
+export function FileTable({ directory_id, setFileId }: FileTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -155,39 +173,60 @@ export function FileTable({ directory_id }: { directory_id: string }) {
   const [data, setFiles] = React.useState<File[]>([]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchFiles = async (): Promise<File[]> => {
-    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/api/file/all/files", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: directory_id,
-      }),
-    });
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_API_URL + "/api/file/all/files",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: directory_id,
+        }),
+      }
+    );
     const files: File[] = await response.json();
     setFiles(files);
     return files;
   };
 
-  // const deleteFile = async (file_name: string) => {
-  //   const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/api/db/file/delete", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       directory_id: directory_id,
-  //       file_name: file_name,
-  //     }),
-  //   });
-  //   const files: File[] = await response.json();
-  //   setFiles(files);
-  //   return files;
-  // };
+  async function deleteFile(
+    id: number,
+    directory_id: number,
+    file_path: string
+  ) {
+    await fetch(
+      process.env.NEXT_PUBLIC_API_URL + "/api/file/delete/file",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: id,
+          directory_id: directory_id,
+          file_path: file_path,
+        }),
+      }
+    );
+  }
+
+  const [selectedAction, setSelectedAction] = React.useState<DropDownMenuAction | null>(null);
+
+  const handleDropdownSelect = (selectedRow: DropDownMenuAction) => {
+    setSelectedAction(selectedRow);
+    console.log(`Row ID: ${selectedAction?.id}, Action: ${selectedAction?.action}`);
+
+    if (selectedAction?.action == "show_json") {
+      setFileId(selectedAction.id.toString())
+    } else if (selectedAction?.action == "delete") {
+      deleteFile(selectedAction.id, selectedAction.directory_id, selectedAction.file_path);
+    }
+  };
 
   const table = useReactTable({
     data,
-    columns,
+    columns: columns(handleDropdownSelect),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
